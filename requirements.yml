@@ -1,0 +1,4 @@
+---
+- src: git+https://github.com/igormatevosian/postgresql-role-ansible.git
+  scm: git
+  name: postgresql

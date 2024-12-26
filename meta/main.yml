@@ -1,0 +1,7 @@
+galaxy_info:
+  author: igormatevosian
+  description: postgresql role
+  role_name: postgresql
+  min_ansible_version: 2.1
+  galaxy_tags: []
+dependencies: []
