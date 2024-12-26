@@ -1,0 +1,31 @@
+---
+- name: Ensure dependencies are installed
+  ansible.builtin.apt:
+    name:
+      - git
+      - "postgresql-server-dev-{{ postgresql_version }}"
+    state: present
+
+- name: Ensure swdc are installed
+  ansible.builtin.apt:
+    deb: https://heterodb.github.io/swdc/deb/heterodb-extra_6.2-1_amd64.deb
+    state: present
+
+- name: Clone repository
+  ansible.builtin.git:
+    repo: https://github.com/heterodb/pg-strom.git
+    depth: 1
+    dest: /opt/pg-strom
+    version: "{{ postgresql_pg_strom_version }}"
+
+- name: Build pg-strom
+  ansible.builtin.command:
+    chdir: "/opt/pg-strom/src"
+    cmd: "make -j {{ postgresql_pg_strom_make_jobs }}"
+    creates: "/opt/pg-strom/src/pg_strom.so"
+
+- name: Install pg-strom
+  ansible.builtin.command:
+    chdir: "/opt/pg-strom/src"
+    cmd: "make install"
+    creates: /usr/lib/postgresql/{{ postgresql_version }}/lib/bitcode/pg_strom

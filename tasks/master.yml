@@ -1,0 +1,9 @@
+---
+- name: Create replica user
+  community.postgresql.postgresql_user:
+    name: "{{ postgresql_replication_user_name }}"
+    password: "{{ postgresql_replication_user_password }}"
+    role_attr_flags: "REPLICATION,LOGIN"
+  no_log: true
+  become: true
+  become_user: "{{ _postgresql_user }}"

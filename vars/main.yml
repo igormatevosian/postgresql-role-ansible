@@ -1,2 +1,3 @@
 ---
-# vars file for postgresql
+_postgresql_keyring_path: /usr/share/keyrings/postgresql.asc
+_postgresql_user: postgres

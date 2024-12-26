@@ -1,0 +1,51 @@
+---
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Ensure dependencies are installed
+  ansible.builtin.apt:
+    name: "{{ postgresql_apt_depend_packages }}"
+    state: present
+
+- name: Add an apt key
+  ansible.builtin.get_url:
+    url: "{{ postgresql_apt_gpg_key_url }}"
+    dest: "{{ _postgresql_keyring_path }}"
+    mode: "0644"
+    force: true
+
+- name: Add postgresql repository
+  ansible.builtin.apt_repository:
+    repo: "{{ postgresql_apt_repository }}"
+    state: present
+    update_cache: true
+
+- name: Ensure common package is installed
+  ansible.builtin.apt:
+    name: "postgresql-common"
+
+- name: Ensure data directory exists
+  ansible.builtin.file:
+    path: "{{ postgresql_data_directory }}"
+    mode: "0700"
+    state: directory
+    owner: postgres
+    group: postgres
+
+- name: Edit data directory
+  ansible.builtin.lineinfile:
+    path: "/etc/postgresql-common/createcluster.conf"
+    regexp: "data_directory ="
+    line: "data_directory = '{{ postgresql_data_directory }}'"
+
+- name: Install postgresql
+  ansible.builtin.apt:
+    name: "{{ postgresql_packages }}"
+    state: present
+
+- name: Install pg-strom
+  ansible.builtin.include_tasks:
+    file: "tasks/setup-pg-strom.yml"
+  when: postgresql_pg_strom
